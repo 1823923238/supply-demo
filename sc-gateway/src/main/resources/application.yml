@@ -1,0 +1,40 @@
+server:
+  port: 10010 #服务端口
+spring:
+  application:
+    name: api-gateway #指定服务名
+zuul:
+  prefix: /api # 添加路由前缀
+  retryable: true
+  add-host-header: true  # 添加header
+  sensitive-headers:     # 把敏感头去掉
+  routes:
+    # 微服务名: 要映射到到地址
+    sc-user-service: /user/** # 将商品微服务映射到/item/**
+
+      # upload-service:
+      #  path: /upload/** # 将上传微服务映射到/upload/**
+      #    serviceId: upload-service
+    #    strip-prefix : false
+eureka:
+  client:
+    registry-fetch-interval-seconds: 5 # 获取服务列表的周期：5s
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    instance-id: ${spring.application.name}:${server.port}
+ribbon:
+  ConnectTimeout: 2000 # 连接超时时间(ms)
+  ReadTimeout: 2000 # 通信超时时间(ms)
+  OkToRetryOnAllOperations: true # 是否对所有操作重试
+  MaxAutoRetriesNextServer: 2 # 同一服务不同实例的重试次数
+  MaxAutoRetries: 1 # 同一实例的重试次数
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMillisecond: 6000 # 熔断超时时长：6000ms
